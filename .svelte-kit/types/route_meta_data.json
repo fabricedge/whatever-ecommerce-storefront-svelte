@@ -1,0 +1,11 @@
+{
+	"/": [],
+	"/account/orders": [],
+	"/auth/signin": [],
+	"/cart": [],
+	"/checkout": [],
+	"/products": [],
+	"/products/[slug]": [
+		"src/routes/products/[slug]/+page.ts"
+	]
+}
