@@ -9,7 +9,7 @@
 <a href="/products/{product.slug}" class="group rounded-lg border border-border p-4 transition-shadow hover:shadow-sm">
   <div class="mb-3 flex aspect-square items-center justify-center rounded-md bg-muted text-sm text-muted-foreground">
     {#if product.images?.[0]}
-      <img src={product.images[0]} alt={product.name} class="h-full w-full rounded-md object-cover" />
+      <img src={product.images[0]} alt={product.name} loading="lazy" width="400" height="400" class="h-full w-full rounded-md object-cover" />
     {:else}
       Sem imagem
     {/if}

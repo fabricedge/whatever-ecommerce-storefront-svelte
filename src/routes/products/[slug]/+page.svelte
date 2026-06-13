@@ -12,7 +12,7 @@
     <div class="grid gap-12 md:grid-cols-2">
       <div class="flex aspect-square items-center justify-center rounded-lg bg-muted">
         {#if product.images?.[0]}
-          <img src={product.images[0]} alt={product.name} class="h-full w-full rounded-lg object-cover" />
+          <img src={product.images[0]} alt={product.name} width="600" height="600" class="h-full w-full rounded-lg object-cover" />
         {:else}
           <span class="text-sm text-muted-foreground">Sem imagem</span>
         {/if}

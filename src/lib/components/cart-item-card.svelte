@@ -13,7 +13,7 @@
 <div class="flex items-center gap-4 rounded-lg border border-border p-4">
   <div class="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md bg-muted">
     {#if item.product.images?.[0]}
-      <img src={item.product.images[0]} alt={item.product.name} class="h-full w-full object-cover" />
+      <img src={item.product.images[0]} alt={item.product.name} loading="lazy" width="80" height="80" class="h-full w-full object-cover" />
     {/if}
   </div>
   <div class="flex-1">
