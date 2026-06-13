@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+
   type Order = {
     id: string
     total: number
@@ -20,8 +22,20 @@
   let loading = $state(false)
   let error = $state<string | null>(null)
 
+  onMount(() => {
+    const params = new URLSearchParams(window.location.search)
+    const saved = sessionStorage.getItem('checkout_email')
+    if (saved) {
+      email = saved
+      sessionStorage.removeItem('checkout_email')
+      const fakeEvent = { preventDefault: () => {} } as Event
+      lookup(fakeEvent)
+    }
+  })
+
   async function lookup(e: Event) {
     e.preventDefault()
+    if (!email) { error = 'Informe seu email'; return }
     error = null
     loading = true
     orders = null
