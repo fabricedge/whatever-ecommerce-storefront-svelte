@@ -14,6 +14,9 @@ export type Product = {
 export type CartItem = {
   productId: string
   quantity: number
+  name: string
+  price: number
+  image?: string
 }
 
 export type MergedCartItem = CartItem & { product?: Product }

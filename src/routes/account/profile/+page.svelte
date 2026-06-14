@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation'
   import { getAuthState } from '$lib/auth.svelte.js'
   import { api } from '$lib/api'
+  import { t } from '$lib/i18n/locale.svelte'
 
   const auth = getAuthState()
 
@@ -27,22 +28,22 @@
         method: 'PUT',
         body: JSON.stringify(body)
       })
-      success = 'Perfil atualizado.'
+      success = t('profile.saved')
       currentPassword = ''
       newPassword = ''
     } catch (err: any) {
-      error = err.error || 'Erro ao atualizar perfil'
+      error = err.error || t('profile.error')
     }
     loading = false
   }
 </script>
 
 <svelte:head>
-  <title>Meu Perfil — Whatever Ecommerce</title>
+  <title>{t('profile.pageTitle')}</title>
 </svelte:head>
 
 <div class="mx-auto max-w-sm px-4 py-12">
-  <h1 class="mb-8 text-2xl font-bold">Meu Perfil</h1>
+  <h1 class="mb-8 text-2xl font-bold">{t('profile.title')}</h1>
 
   {#if error}
     <div class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
@@ -52,12 +53,12 @@
   {/if}
 
   {#if !auth.user}
-    <p class="text-muted-foreground">Você precisa estar logado para acessar esta página.</p>
-    <a href="/auth/signin" class="mt-4 inline-block text-sm font-medium text-primary underline underline-offset-4">Entrar</a>
+    <p class="text-muted-foreground">{t('profile.needLogin')}</p>
+    <a href="/auth/signin" class="mt-4 inline-block text-sm font-medium text-primary underline underline-offset-4">{t('profile.signIn')}</a>
   {:else}
     <form onsubmit={handleSubmit} class="space-y-4">
       <div>
-        <label for="email" class="mb-1 block text-sm font-medium">Email</label>
+        <label for="email" class="mb-1 block text-sm font-medium">{t('profile.email')}</label>
         <input
           id="email"
           type="email"
@@ -67,7 +68,7 @@
         />
       </div>
       <div>
-        <label for="name" class="mb-1 block text-sm font-medium">Nome</label>
+        <label for="name" class="mb-1 block text-sm font-medium">{t('profile.name')}</label>
         <input
           id="name"
           type="text"
@@ -76,9 +77,9 @@
         />
       </div>
       <hr class="border-border" />
-      <p class="text-sm font-medium">Alterar senha (opcional)</p>
+      <p class="text-sm font-medium">{t('profile.changePassword')}</p>
       <div>
-        <label for="currentPassword" class="mb-1 block text-sm font-medium">Senha atual</label>
+        <label for="currentPassword" class="mb-1 block text-sm font-medium">{t('profile.currentPassword')}</label>
         <input
           id="currentPassword"
           type="password"
@@ -87,7 +88,7 @@
         />
       </div>
       <div>
-        <label for="newPassword" class="mb-1 block text-sm font-medium">Nova senha</label>
+        <label for="newPassword" class="mb-1 block text-sm font-medium">{t('profile.newPassword')}</label>
         <input
           id="newPassword"
           type="password"
@@ -101,7 +102,7 @@
         disabled={loading}
         class="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer"
       >
-        {loading ? 'Salvando...' : 'Salvar'}
+        {loading ? t('profile.saving') : t('profile.save')}
       </button>
     </form>
   {/if}

@@ -2,15 +2,15 @@
   import { getCartState } from '$lib/cart.svelte.js'
   import { goto } from '$app/navigation'
 
-  let { productId, quantity = 1, disabled = false }: { productId: string; quantity?: number; disabled?: boolean } = $props()
+  let { productId, name, price, image, quantity = 1, disabled = false }: { productId: string; name: string; price: number; image?: string; quantity?: number; disabled?: boolean } = $props()
 
   const cart = getCartState()
   let clicked = $state(false)
 
   function handleBuyNow() {
-    cart.addItem(productId, quantity)
+    cart.addItem(productId, quantity, { name, price, image })
     clicked = true
-    goto('/checkout')
+    goto('/cart')
   }
 </script>
 

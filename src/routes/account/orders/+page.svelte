@@ -3,8 +3,10 @@
   import type { Order, OrderStatus } from '$lib/types'
   import { ORDER_STATUS_LABELS } from '$lib/types'
   import { formatPrice } from '$lib/utils'
+  import { t, getLocale } from '$lib/i18n/locale.svelte'
 
   const STEPS: OrderStatus[] = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED']
+  const localeMap: Record<string, string> = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' }
 
   let email = $state('')
   let orders = $state<Order[] | null>(null)
@@ -24,17 +26,17 @@
 
   async function lookup(e: Event) {
     e.preventDefault()
-    if (!email) { error = 'Informe seu email'; return }
+    if (!email) { error = t('orders.emailRequired'); return }
     error = null
     loading = true
     orders = null
     try {
       const res = await fetch(`/api/orders/lookup?email=${encodeURIComponent(email)}`)
       const data = await res.json()
-      if (!res.ok) { error = data.error || 'Erro ao buscar pedidos'; return }
+      if (!res.ok) { error = data.error || t('orders.fetchError'); return }
       orders = data.orders || []
     } catch {
-      error = 'Erro ao buscar pedidos'
+      error = t('orders.fetchError')
     }
     loading = false
   }
@@ -45,17 +47,17 @@
 </script>
 
 <svelte:head>
-  <title>Meus Pedidos — Whatever Ecommerce</title>
+  <title>{t('orders.pageTitle')}</title>
 </svelte:head>
 
 <div class="mx-auto max-w-2xl px-4 py-12">
-  <h1 class="mb-8 text-3xl font-bold">Meus Pedidos</h1>
+  <h1 class="mb-8 text-3xl font-bold">{t('orders.title')}</h1>
 
   <form onsubmit={lookup} class="mb-8 flex gap-2">
     <input
       type="email"
       bind:value={email}
-      placeholder="Seu email"
+      placeholder={t('orders.emailPlaceholder')}
       required
       class="flex-1 rounded-md border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
     />
@@ -64,7 +66,7 @@
       disabled={loading}
       class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer"
     >
-      {loading ? 'Buscando...' : 'Buscar'}
+      {loading ? t('orders.searching') : t('orders.lookup')}
     </button>
   </form>
 
@@ -90,16 +92,16 @@
         <svg class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
-        <p class="text-muted-foreground">Nenhum pedido encontrado para este email.</p>
+        <p class="text-muted-foreground">{t('orders.noOrders')}</p>
       </div>
     {:else}
       <div class="space-y-6">
         {#each orders as order}
           <div class="rounded-lg border border-border p-4">
             <div class="mb-3 flex items-center justify-between">
-              <span class="text-sm font-medium">Pedido #{order.id.slice(0, 8)}</span>
+              <span class="text-sm font-medium">{t('orders.orderRef', { id: order.id.slice(0, 8) })}</span>
               <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {order.status === 'PAID' || order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' : order.status === 'CANCELLED' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
-                {ORDER_STATUS_LABELS[order.status as OrderStatus] || order.status}
+                {t(`orders.status.${order.status as OrderStatus}`) || order.status}
               </span>
             </div>
 
@@ -129,7 +131,7 @@
 
             {#if order.shippingAddress}
               <div class="mt-3 border-t border-border pt-3 text-sm text-muted-foreground">
-                <p class="font-medium text-foreground">Endereço de entrega</p>
+                <p class="font-medium text-foreground">{t('orders.deliveryAddress')}</p>
                 {#if order.shippingName}<p>{order.shippingName}</p>{/if}
                 <p>{order.shippingAddress}</p>
                 {#if order.shippingCity && order.shippingState}
@@ -140,7 +142,7 @@
             {/if}
 
             <div class="mt-3 flex justify-between border-t border-border pt-3 text-sm">
-              <span>{new Date(order.createdAt).toLocaleDateString('pt-BR')}</span>
+              <span>{new Date(order.createdAt).toLocaleDateString(localeMap[getLocale()])}</span>
               <span class="font-semibold">{formatPrice(order.total)}</span>
             </div>
           </div>

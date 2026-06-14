@@ -25,7 +25,7 @@ describe('CartState', () => {
     const state = getState()
     state.addItem('prod-1', 2)
     expect(state.items).toHaveLength(1)
-    expect(state.items[0]).toEqual({ productId: 'prod-1', quantity: 2 })
+    expect(state.items[0]).toEqual({ productId: 'prod-1', quantity: 2, name: '', price: 0 })
   })
 
   it('increments quantity when adding existing item', () => {
@@ -69,22 +69,22 @@ describe('CartState', () => {
     const state = getState()
     state.addItem('prod-1', 1)
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)!)
-    expect(saved).toEqual([{ productId: 'prod-1', quantity: 1 }])
+    expect(saved).toEqual([{ productId: 'prod-1', quantity: 1, name: '', price: 0 }])
   })
 
   it('restores items from localStorage', () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([{ productId: 'prod-1', quantity: 3 }]))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([{ productId: 'prod-1', quantity: 3, name: '', price: 0 }]))
     const { getState } = setup()
-    expect(getState().items).toEqual([{ productId: 'prod-1', quantity: 3 }])
+    expect(getState().items).toEqual([{ productId: 'prod-1', quantity: 3, name: '', price: 0 }])
   })
 
   it('restores from localStorage after add', () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([{ productId: 'existing', quantity: 1 }]))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([{ productId: 'existing', quantity: 1, name: '', price: 0 }]))
     const { getState } = setup()
     const state = getState()
     state.addItem('new', 2)
     expect(state.items).toHaveLength(2)
-    expect(state.items[0]).toEqual({ productId: 'existing', quantity: 1 })
-    expect(state.items[1]).toEqual({ productId: 'new', quantity: 2 })
+    expect(state.items[0]).toEqual({ productId: 'existing', quantity: 1, name: '', price: 0 })
+    expect(state.items[1]).toEqual({ productId: 'new', quantity: 2, name: '', price: 0 })
   })
 })

@@ -5,14 +5,34 @@
   import Toast from '$lib/components/toast.svelte'
   import { setAuthState } from '$lib/auth.svelte.js'
   import { setCartState } from '$lib/cart.svelte.js'
+  import { setStoreId } from '$lib/api'
+  import { onMount } from 'svelte'
   import { navigating } from '$app/stores'
+  import { getLocale, setLocale, t } from '$lib/i18n/locale.svelte'
 
   let { children, data } = $props()
 
-  setAuthState()
-  setCartState()
+  {
+    const hasExplicit = (() => { try { return ['pt','en','es'].includes(localStorage.getItem('locale') || '') } catch { return false } })()
+    if (data?.locale && !hasExplicit) setLocale(data.locale as 'pt' | 'en' | 'es')
+  }
+
+  const auth = setAuthState()
+  const cart = setCartState()
+
+  $effect(() => {
+    if (data?.storeId) setStoreId(data.storeId)
+  })
 
   let loading = $derived($navigating)
+
+  onMount(() => {
+    function handleCartSync() {
+      cart.mergeToDB()
+    }
+    window.addEventListener('cart:sync', handleCartSync)
+    return () => window.removeEventListener('cart:sync', handleCartSync)
+  })
 
   let branding = $derived(data.branding || {})
 
@@ -30,7 +50,7 @@
 </script>
 
 <a href="#main-content" class="skip-link fixed left-4 top-4 z-50 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary">
-  Pular para o conteúdo
+  {t('layout.skipLink')}
 </a>
 
 {#if loading}

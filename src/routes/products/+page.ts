@@ -1,7 +1,14 @@
 import { PUBLIC_API_URL } from '$env/static/public'
 import type { PageLoad } from './$types'
 
-export const load: PageLoad = async ({ fetch, url }) => {
+export const config = {
+  isr: { expiration: 60 }
+}
+
+export const load: PageLoad = async ({ data, fetch, url }) => {
+  const storeId = (data as any)?.storeId || ''
+  const headers: Record<string, string> = storeId ? { 'X-Store-Id': storeId } : {}
+
   const search = url.searchParams.get('search') || ''
   const category = url.searchParams.get('category') || ''
   const sort = url.searchParams.get('sort') || 'newest'
@@ -15,8 +22,8 @@ export const load: PageLoad = async ({ fetch, url }) => {
   if (category) params.set('category', category)
 
   const [productsRes, categoriesRes] = await Promise.all([
-    fetch(`${PUBLIC_API_URL}/api/products?${params}`),
-    fetch(`${PUBLIC_API_URL}/api/products/categories`)
+    fetch(`${PUBLIC_API_URL}/api/products?${params}`, { headers }),
+    fetch(`${PUBLIC_API_URL}/api/products/categories`, { headers })
   ])
 
   const productsData = await productsRes.json()

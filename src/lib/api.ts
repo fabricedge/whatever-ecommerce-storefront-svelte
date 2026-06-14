@@ -1,5 +1,15 @@
 const TOKEN_KEY = 'auth_token'
 
+let _storeId = ''
+
+export function setStoreId(id: string) {
+  _storeId = id
+}
+
+export function getStoreId(): string {
+  return _storeId
+}
+
 export function getToken(): string | null {
   try { return localStorage.getItem(TOKEN_KEY) } catch { return null }
 }
@@ -33,6 +43,7 @@ export async function api(path: string, options?: RequestInit) {
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(_storeId ? { 'X-Store-Id': _storeId } : {}),
       ...options?.headers
     }
   })

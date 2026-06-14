@@ -25,6 +25,7 @@ class AuthState {
     })
     setToken(data.token)
     this.user = data.user
+    setTimeout(() => window.dispatchEvent(new CustomEvent('cart:sync')), 2000)
   }
 
   async register(email: string, password: string, name?: string) {
@@ -34,6 +35,7 @@ class AuthState {
     })
     setToken(data.token)
     this.user = data.user
+    setTimeout(() => window.dispatchEvent(new CustomEvent('cart:sync')), 2000)
   }
 
   logout() {

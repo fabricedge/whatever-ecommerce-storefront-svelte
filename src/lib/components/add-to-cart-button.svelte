@@ -2,14 +2,14 @@
   import { getCartState } from '$lib/cart.svelte.js'
   import { getToastState } from '$lib/toast.svelte.js'
 
-  let { productId, quantity = 1, disabled = false }: { productId: string; quantity?: number; disabled?: boolean } = $props()
+  let { productId, name, price, image, quantity = 1, disabled = false }: { productId: string; name: string; price: number; image?: string; quantity?: number; disabled?: boolean } = $props()
 
   const cart = getCartState()
   const toast = getToastState()
   let added = $state(false)
 
   function handleClick() {
-    cart.addItem(productId, quantity)
+    cart.addItem(productId, quantity, { name, price, image })
     added = true
     toast.success('Adicionado ao carrinho!')
     setTimeout(() => added = false, 2000)

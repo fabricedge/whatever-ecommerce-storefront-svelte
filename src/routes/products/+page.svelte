@@ -5,6 +5,7 @@
   import type { Product, Category, SortOption } from '$lib/types'
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
+  import { t } from '$lib/i18n/locale.svelte'
 
   let { data }: { data: PageData } = $props()
 
@@ -61,14 +62,14 @@
 </script>
 
 <svelte:head>
-  <title>{currentSearch ? `"${currentSearch}" em ` : ''}Produtos — Whatever Ecommerce</title>
-  <meta name="description" content="Confira todos os nossos produtos." />
+  <title>{currentSearch ? `"${currentSearch}" — ` : ''}{t('products.pageTitle')}</title>
+  <meta name="description" content={t('products.pageDescription')} />
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 py-12">
-  <Breadcrumbs crumbs={[{ label: 'Produtos' }]} />
+  <Breadcrumbs crumbs={[{ label: t('products.title') }]} />
 
-<h1 class="mb-6 text-3xl font-bold">Todos os Produtos</h1>
+<h1 class="mb-6 text-3xl font-bold">{t('products.allProducts')}</h1>
 
   <div class="mb-6 flex flex-col gap-4 sm:flex-row">
     <form onsubmit={(e) => { e.preventDefault(); handleSearch() }} class="flex-1">
@@ -76,7 +77,7 @@
         <input
           type="text"
           bind:value={searchValue}
-          placeholder="Buscar produtos..."
+          placeholder={t('products.searchPlaceholder')}
           class="w-full rounded-md border border-border px-3 py-2 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         />
         <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,7 +91,7 @@
       onchange={handleCategoryChange}
       class="w-full rounded-md border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary sm:w-48"
     >
-      <option value="">Todas as categorias</option>
+      <option value="">{t('products.allCategories')}</option>
       {#each categories as cat}
         <option value={cat.name}>{cat.name} ({cat.productCount})</option>
       {/each}
@@ -101,10 +102,10 @@
       onchange={handleSortChange}
       class="w-full rounded-md border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary sm:w-40"
     >
-      <option value="newest">Mais recentes</option>
-      <option value="price_asc">Menor preço</option>
-      <option value="price_desc">Maior preço</option>
-      <option value="name_asc">A-Z</option>
+      <option value="newest">{t('products.newest')}</option>
+      <option value="price_asc">{t('products.priceAsc')}</option>
+      <option value="price_desc">{t('products.priceDesc')}</option>
+      <option value="name_asc">{t('products.nameAsc')}</option>
     </select>
   </div>
 
@@ -133,7 +134,7 @@
           disabled={currentPage <= 1}
           class="inline-flex h-9 items-center justify-center rounded-md border border-border px-3 text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
         >
-          Anterior
+          {t('products.previous')}
         </button>
 
         {#each Array(totalPages) as _, i}
@@ -156,7 +157,7 @@
           disabled={currentPage >= totalPages}
           class="inline-flex h-9 items-center justify-center rounded-md border border-border px-3 text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
         >
-          Próximo
+          {t('products.next')}
         </button>
       </div>
     {/if}
@@ -165,9 +166,9 @@
       <svg class="mx-auto mb-4 h-12 w-12 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
       </svg>
-      <p class="text-lg text-muted-foreground">Nenhum produto encontrado.</p>
+      <p class="text-lg text-muted-foreground">{t('products.noProducts')}</p>
       {#if currentSearch || currentCategory}
-        <a href="/products" class="mt-2 inline-block text-sm font-medium text-primary underline underline-offset-4">Limpar filtros</a>
+        <a href="/products" class="mt-2 inline-block text-sm font-medium text-primary underline underline-offset-4">{t('products.clearFilters')}</a>
       {/if}
     </div>
   {/if}
