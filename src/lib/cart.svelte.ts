@@ -6,6 +6,7 @@ export type CartItem = { productId: string; quantity: number }
 
 class CartState {
   items = $state<CartItem[]>([])
+  count = $derived(this.items.reduce((sum, i) => sum + i.quantity, 0))
 
   constructor() {
     const raw = this.#read()
@@ -26,7 +27,9 @@ class CartState {
   addItem(productId: string, quantity = 1) {
     const existing = this.items.find((i) => i.productId === productId)
     if (existing) {
-      existing.quantity += quantity
+      this.items = this.items.map((i) =>
+        i.productId === productId ? { ...i, quantity: i.quantity + quantity } : i
+      )
     } else {
       this.items = [...this.items, { productId, quantity }]
     }
@@ -34,12 +37,11 @@ class CartState {
   }
 
   updateQuantity(productId: string, quantity: number) {
-    const item = this.items.find((i) => i.productId === productId)
-    if (item) {
-      item.quantity = quantity
-      this.items = [...this.items]
-      this.#save()
-    }
+    const clamped = Math.min(1000, Math.max(1, quantity))
+    this.items = this.items.map((i) =>
+      i.productId === productId ? { ...i, quantity: clamped } : i
+    )
+    this.#save()
   }
 
   removeItem(productId: string) {

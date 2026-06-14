@@ -1,7 +1,6 @@
 <script lang="ts">
   import { formatPrice } from '$lib/utils'
-
-  type Product = { id: string; name: string; slug: string; price: number; images: string[]; category: string | null; inventory: number }
+  import type { Product } from '$lib/types'
 
   let { product }: { product: Product } = $props()
 </script>

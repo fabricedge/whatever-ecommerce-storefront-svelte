@@ -3,9 +3,9 @@
 @theme inline {
   --color-background: #ffffff;
   --color-foreground: #18181b;
-  --color-primary: #18181b;
+  --color-primary: var(--brand-primary, #18181b);
   --color-primary-foreground: #fafafa;
-  --color-muted: #f4f4f5;
+  --color-muted: var(--brand-secondary, #f4f4f5);
   --color-muted-foreground: #71717a;
   --color-border: #e4e4e7;
   --color-card: #ffffff;
@@ -15,5 +15,37 @@
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--brand-font-family, system-ui, -apple-system, sans-serif);
+}
+
+@keyframes slide-up {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes loading-bar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@keyframes loading-bar-fade {
+  0% { opacity: 1; width: 0%; }
+  60% { width: 70%; }
+  100% { opacity: 0; width: 100%; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.25s ease-out;
+}
+
+.animate-loading-bar {
+  animation: loading-bar-fade 2s ease-in-out infinite;
+}
+
+.skip-link:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
 }
