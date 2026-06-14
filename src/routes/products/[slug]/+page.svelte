@@ -2,11 +2,13 @@
   import type { PageData } from './$types'
   import { formatPrice } from '$lib/utils'
   import AddToCartButton from '$lib/components/add-to-cart-button.svelte'
+  import BuyNowButton from '$lib/components/buy-now-button.svelte'
   import Breadcrumbs from '$lib/components/breadcrumbs.svelte'
   import type { Product } from '$lib/types'
 
   let { data }: { data: PageData } = $props()
   let product = $derived(data.product as Product | null)
+  let loadError = $derived(data.loadError as boolean | undefined)
   let quantity = $state(1)
 </script>
 
@@ -82,10 +84,23 @@
           {product.inventory > 0 ? `${product.inventory} em estoque` : 'Fora de estoque'}
         </p>
 
-        <AddToCartButton productId={product.id} {quantity} disabled={product.inventory === 0} />
+        <div class="flex flex-col gap-2 sm:flex-row">
+          <div class="flex-1">
+            <AddToCartButton productId={product.id} {quantity} disabled={product.inventory === 0} />
+          </div>
+          <BuyNowButton productId={product.id} {quantity} disabled={product.inventory === 0} />
+        </div>
       </div>
     </div>
+  {:else if loadError}
+    <div class="py-16 text-center">
+      <p class="text-lg text-red-600">Erro ao carregar o produto.</p>
+      <p class="mt-2 text-sm text-muted-foreground">Tente recarregar a página ou volte para <a href="/products" class="text-primary underline underline-offset-4">todos os produtos</a>.</p>
+    </div>
   {:else}
-    <p class="text-muted-foreground">Produto não encontrado.</p>
+    <div class="py-16 text-center">
+      <p class="text-lg text-muted-foreground">Produto não encontrado.</p>
+      <p class="mt-2 text-sm text-muted-foreground">Este produto pode ter sido removido. <a href="/products" class="text-primary underline underline-offset-4">Ver todos os produtos</a>.</p>
+    </div>
   {/if}
 </div>

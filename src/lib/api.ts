@@ -12,9 +12,23 @@ export function clearToken() {
   try { localStorage.removeItem(TOKEN_KEY) } catch {}
 }
 
+async function fetchWithRetry(path: string, options: RequestInit, retries = 2): Promise<Response> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(path, options)
+      if (res.status !== 502 && res.status !== 503) return res
+      if (attempt === retries) return res
+    } catch (e) {
+      if (attempt === retries) throw e
+    }
+    await new Promise(r => setTimeout(r, attempt * 500))
+  }
+  throw new Error('fetch failed')
+}
+
 export async function api(path: string, options?: RequestInit) {
   const token = getToken()
-  const res = await fetch(path, {
+  const res = await fetchWithRetry(path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',

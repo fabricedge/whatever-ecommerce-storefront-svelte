@@ -12,6 +12,7 @@
   let loading = $state(true)
   let email = $state('')
   let error = $state<string | null>(null)
+  let removedInfo = $state<string | null>(null)
   let processing = $state(false)
 
   async function loadCart() {
@@ -21,17 +22,41 @@
       loading = false
       return
     }
+
     const ids = raw.map((i) => i.productId).join(',')
+    let productMap = new Map<string, Product>()
+    let fetchFailed = false
+
     try {
       const data = await api(`/api/products?ids=${ids}`)
-      const productMap = new Map((data.products || []).map((p: Product) => [p.id, p]))
-      items = raw.map((ci) => ({
-        ...ci,
-        product: productMap.get(ci.productId) || undefined
-      }))
+      productMap = new Map((data.products || []).map((p: Product) => [p.id, p]))
     } catch {
-      items = raw.map((ci) => ({ ...ci, product: undefined }))
+      fetchFailed = true
     }
+
+    if (fetchFailed) {
+      items = raw.map((ci) => ({ ...ci, product: undefined }))
+      loading = false
+      return
+    }
+
+    const remaining = raw.filter((ci) => {
+      if (!productMap.has(ci.productId)) {
+        cart.removeItem(ci.productId)
+        return false
+      }
+      return true
+    })
+
+    if (remaining.length < raw.length) {
+      const count = raw.length - remaining.length
+      removedInfo = `${count} ${count === 1 ? 'item foi removido' : 'itens foram removidos'} por não estar${count === 1 ? '' : 'em'} mais disponível${count === 1 ? '' : 'eis'}.`
+    }
+
+    items = remaining.map((ci) => ({
+      ...ci,
+      product: productMap.get(ci.productId)!,
+    }))
     loading = false
   }
 
@@ -41,6 +66,13 @@
     items = items
       .map(i => i.productId === productId ? { ...i, quantity: qty } : i)
       .filter(i => i.quantity > 0)
+  }
+
+  function removeAllUnavailable() {
+    const toRemove = items.filter(i => !i.product)
+    for (const item of toRemove) cart.removeItem(item.productId)
+    items = items.filter(i => i.product)
+    removedInfo = null
   }
 
   let subtotal = $derived(
@@ -84,6 +116,13 @@
     <div class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
   {/if}
 
+  {#if removedInfo}
+    <div class="mb-4 flex items-center justify-between rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
+      <span>{removedInfo}</span>
+      <button onclick={() => removedInfo = null} class="ml-2 font-medium underline cursor-pointer">Ok</button>
+    </div>
+  {/if}
+
   {#if loading}
     <div class="space-y-4">
       {#each Array(2) as _}
@@ -115,6 +154,15 @@
         <CartItemCard {item} onUpdate={handleUpdate} />
       {/each}
     </div>
+
+    {#if hasMissingProducts}
+      <div class="mb-4 flex items-center justify-between rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <span>Alguns itens não estão mais disponíveis.</span>
+        <button onclick={removeAllUnavailable} class="ml-2 font-medium underline cursor-pointer">
+          Remover todos
+        </button>
+      </div>
+    {/if}
 
     <div class="mb-6 rounded-lg border border-border p-4">
       <div class="space-y-2 text-sm">
