@@ -1,4 +1,4 @@
-import { PUBLIC_API_URL } from '$env/static/public'
+import { PUBLIC_API_URL, PUBLIC_STORE_ID } from '$env/static/public'
 import type { LayoutServerLoad } from './$types'
 
 type Locale = 'pt' | 'en' | 'es'
@@ -20,7 +20,11 @@ export const load: LayoutServerLoad = async ({ request, fetch }) => {
 
   let storeId = ''
 
-  if (host) {
+  // Independent storefronts use PUBLIC_STORE_ID at build time
+  // Default storefronts use domain lookup
+  if (PUBLIC_STORE_ID) {
+    storeId = PUBLIC_STORE_ID
+  } else if (host) {
     try {
       const res = await fetch(`${PUBLIC_API_URL}/api/stores/lookup?domain=${host}`)
       if (res.ok) {
