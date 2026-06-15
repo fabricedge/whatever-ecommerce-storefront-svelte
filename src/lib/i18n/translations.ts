@@ -142,6 +142,8 @@ export const translations: Record<Locale, Record<string, any>> = {
     },
     layout: {
       skipLink: 'Pular para o conteúdo',
+      storeNotFoundTitle: 'Loja não encontrada',
+      storeNotFoundDesc: 'Esta loja não está disponível ou o endereço está incorreto.',
     },
     common: {
       loading: 'Carregando...',
@@ -292,6 +294,8 @@ export const translations: Record<Locale, Record<string, any>> = {
     },
     layout: {
       skipLink: 'Skip to content',
+      storeNotFoundTitle: 'Store not found',
+      storeNotFoundDesc: 'This store is not available or the address is incorrect.',
     },
     common: {
       loading: 'Loading...',
@@ -442,6 +446,8 @@ export const translations: Record<Locale, Record<string, any>> = {
     },
     layout: {
       skipLink: 'Saltar al contenido',
+      storeNotFoundTitle: 'Tienda no encontrada',
+      storeNotFoundDesc: 'Esta tienda no está disponible o la dirección es incorrecta.',
     },
     common: {
       loading: 'Cargando...',

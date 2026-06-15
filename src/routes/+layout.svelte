@@ -94,6 +94,7 @@
     return () => window.removeEventListener('cart:sync', handleCartSync)
   })
 
+  let storeNotFound = $derived(!data?.storeId && !data?.branding?.primary_color)
   let branding = $derived(data.branding || {})
 
   $effect(() => {
@@ -139,6 +140,13 @@
           Entrar
         </button>
       </form>
+    </div>
+  </div>
+{:else if storeNotFound}
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div class="max-w-sm w-full bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+      <h1 class="text-xl font-bold mb-2">{t('layout.storeNotFoundTitle')}</h1>
+      <p class="text-sm text-gray-500 mb-6">{t('layout.storeNotFoundDesc')}</p>
     </div>
   </div>
 {:else}

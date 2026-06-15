@@ -14,19 +14,30 @@ function detectLocale(headers: Headers): Locale {
   return 'pt'
 }
 
-export const load: LayoutServerLoad = async ({ request, fetch }) => {
+export const load: LayoutServerLoad = async ({ request, fetch, url }) => {
   const locale = detectLocale(request.headers)
   const host = request.headers.get('host') || ''
 
-  let storeId = ''
+  let storeId = url.searchParams.get('store') || ''
 
-  // Independent storefronts use PUBLIC_STORE_ID at build time
-  // Default storefronts use domain lookup
+  // Priority: PUBLIC_STORE_ID env > ?store= query > Host lookup > default store
   if (PUBLIC_STORE_ID) {
     storeId = PUBLIC_STORE_ID
-  } else if (host) {
+  }
+
+  if (!storeId && host) {
     try {
       const res = await fetch(`${PUBLIC_API_URL}/api/stores/lookup?domain=${host}`)
+      if (res.ok) {
+        const store = await res.json()
+        storeId = store.id
+      }
+    } catch {}
+  }
+
+  if (!storeId) {
+    try {
+      const res = await fetch(`${PUBLIC_API_URL}/api/stores/default`)
       if (res.ok) {
         const store = await res.json()
         storeId = store.id
