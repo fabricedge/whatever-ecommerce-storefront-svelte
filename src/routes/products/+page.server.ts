@@ -1,12 +1,8 @@
 import { PUBLIC_API_URL } from '$env/static/public'
-import type { PageLoad } from './$types'
+import type { PageServerLoad } from './$types'
 
-export const config = {
-  isr: { expiration: 60 }
-}
-
-export const load: PageLoad = async ({ data, fetch, url }) => {
-  const storeId = (data as any)?.storeId || ''
+export const load: PageServerLoad = async ({ parent, fetch, url }) => {
+  const { storeId } = await parent() as { storeId?: string }
   const headers: Record<string, string> = storeId ? { 'X-Store-Id': storeId } : {}
 
   const search = url.searchParams.get('search') || ''

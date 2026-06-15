@@ -1,12 +1,8 @@
 import { PUBLIC_API_URL } from '$env/static/public'
-import type { PageLoad } from './$types'
+import type { PageServerLoad } from './$types'
 
-export const config = {
-  isr: { expiration: 60 }
-}
-
-export const load: PageLoad = async ({ data, fetch }) => {
-  const storeId = (data as any)?.storeId || ''
+export const load: PageServerLoad = async ({ parent, fetch }) => {
+  const { storeId } = await parent() as { storeId?: string }
 
   try {
     const res = await fetch(`${PUBLIC_API_URL}/api/products?limit=8`, {
