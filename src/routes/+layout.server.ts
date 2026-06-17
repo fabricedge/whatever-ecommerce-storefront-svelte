@@ -1,5 +1,6 @@
 import { PUBLIC_API_URL, PUBLIC_STORE_ID } from '$env/static/public'
 import type { LayoutServerLoad } from './$types'
+import { withToken } from '$lib/internal-api'
 
 type Locale = 'pt' | 'en' | 'es'
 
@@ -15,6 +16,7 @@ function detectLocale(headers: Headers): Locale {
 }
 
 export const load: LayoutServerLoad = async ({ request, fetch, url }) => {
+  const authedFetch = withToken(fetch)
   const locale = detectLocale(request.headers)
   const host = request.headers.get('host') || ''
 
@@ -27,7 +29,7 @@ export const load: LayoutServerLoad = async ({ request, fetch, url }) => {
 
   if (!storeId && host) {
     try {
-      const res = await fetch(`${PUBLIC_API_URL}/api/stores/lookup?domain=${host}`)
+      const res = await authedFetch(`${PUBLIC_API_URL}/api/stores/lookup?domain=${host}`)
       if (res.ok) {
         const store = await res.json()
         storeId = store.id
@@ -37,7 +39,7 @@ export const load: LayoutServerLoad = async ({ request, fetch, url }) => {
 
   if (!storeId) {
     try {
-      const res = await fetch(`${PUBLIC_API_URL}/api/stores/default`)
+      const res = await authedFetch(`${PUBLIC_API_URL}/api/stores/default`)
       if (res.ok) {
         const store = await res.json()
         storeId = store.id
@@ -54,7 +56,7 @@ export const load: LayoutServerLoad = async ({ request, fetch, url }) => {
 
   if (storeId) {
     try {
-      const res = await fetch(`${PUBLIC_API_URL}/api/stores/${storeId}/branding`)
+      const res = await authedFetch(`${PUBLIC_API_URL}/api/stores/${storeId}/branding`)
       if (res.ok) {
         const data = await res.json()
         branding = data.branding || {}

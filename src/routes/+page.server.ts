@@ -1,16 +1,19 @@
 import { PUBLIC_API_URL } from '$env/static/public'
 import type { PageServerLoad } from './$types'
+import { withToken } from '$lib/internal-api'
 
 export const load: PageServerLoad = async ({ parent, fetch }) => {
+  const authedFetch = withToken(fetch)
   const { storeId } = await parent() as { storeId?: string }
 
   try {
-    const res = await fetch(`${PUBLIC_API_URL}/api/products?limit=8`, {
+    const res = await authedFetch(`${PUBLIC_API_URL}/api/products?limit=8`, {
       headers: storeId ? { 'X-Store-Id': storeId } : {}
     })
     if (!res.ok) return { products: [] }
-    const result = await res.json() as { products?: unknown[] }
-    return { products: result.products || [] }
+    let result
+    try { result = await res.json() } catch { return { products: [] } }
+    return { products: (result as any).products || [] }
   } catch {
     return { products: [] }
   }
